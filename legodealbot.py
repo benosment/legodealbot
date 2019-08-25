@@ -13,7 +13,8 @@ from email.mime.text import MIMEText
 from io import StringIO
 from twilio.rest import Client
 
-query_terms = ['assembly square', 'treehouse', 'modular', 'overwatch', 'architecture']
+query_terms = ['assembly square', 'tree house', 'modular', 'overwatch', 'gibraltar', 'architecture', 'upside down',
+               'downtown diner', 'tower bridge', 'corner garage', 'sanctum', 'captain marvel']
 
 
 def search_post(submission):
@@ -30,17 +31,13 @@ def search_post(submission):
 
 
 def send_email(subject, body):
-    try:
-        gmail_user = os.environ.get('MAIL_USERNAME')
-        gmail_password = os.environ.get('MAIL_PASSWORD')
-    except:
-        logging.exception('unable to import mail username/password')
-        raise
+    gmail_user = os.environ.get('MAIL_USERNAME')
+    gmail_password = os.environ.get('MAIL_PASSWORD')
 
-    if not gmail_user or not gmail_password:
-        raise EnvironmentError('invalid user or password for sending mail')
+    if not all([gmail_user, gmail_password]):
+        raise Exception("Gmail environment variables not configured")
 
-    from_address = ['pycomic-v2', gmail_user]
+    from_address = ['legodealbot', gmail_user]
     recipient = ['Master', gmail_user]
 
     print(subject, body)

@@ -13,7 +13,7 @@ from email.mime.text import MIMEText
 from io import StringIO
 from twilio.rest import Client
 
-query_terms = ['assembly square', 'treehouse', 'modular']
+query_terms = ['assembly square', 'treehouse', 'modular', 'overwatch', 'architecture']
 
 
 def search_post(submission):
@@ -85,15 +85,15 @@ def send_text(msg):
 
 def notify(submission, match_list):
     logging.debug('Found: %s [%s]', submission.title, submission.url)
-    #email_title = submission.title
-    #email_body = 'Link: %s\n\n %s' % (submission.url,
-    #                                  submission.selftext)
-    #for match in match_list:
-    #    pattern = re.compile(re.escape(match), re.IGNORECASE)
-    #    email_body = pattern.sub('<mark>%s</mark>' % match, email_body)
-    #email_body = 'Matched: <b>%s</b>\n\n' % (', '.join(match_list)) + email_body
-    #email_body = email_body.replace('\n', '<br>')
-    #send_email(email_title, email_body)
+    email_title = submission.title
+    email_body = 'Link: %s\n\n %s' % (submission.url,
+                                      submission.selftext)
+    for match in match_list:
+        pattern = re.compile(re.escape(match), re.IGNORECASE)
+        email_body = pattern.sub('<mark>%s</mark>' % match, email_body)
+    email_body = 'Matched: <b>%s</b>\n\n' % (', '.join(match_list)) + email_body
+    email_body = email_body.replace('\n', '<br>')
+    send_email(email_title, email_body)
 
     msg = "Found: %s - %s" % (' '.join(match_list), submission.permalink)
     print(msg)

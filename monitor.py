@@ -8,6 +8,7 @@ import logging
 
 PROCESS_NAME = 'legodealbot.py'
 VENV_PATH = '/home/pi/legodealbot/venv/bin/python'
+PROCESS_PATH = '/home/pi/legodealbot/legodealbot.py'
 
 
 def process_is_down(process_name):
@@ -26,7 +27,7 @@ def send_respawn_email(cmd):
 
 def respawn():
     dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-    command = f"nohup {VENV_PATH} {dir}/{PROCESS_NAME}"
+    command = f"nohup {VENV_PATH} {PROCESS_PATH}"
     logging.debug('Respawning process %s', command)
     send_respawn_email(command)
     subprocess.run(command.split())

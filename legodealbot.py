@@ -81,13 +81,12 @@ def send_text(msg):
 
 
 def notify(submission, match_list):
-    logging.debug('Found: %s [%s]', submission.title, submission.url)
+    logging.debug(f'Found: {submission.title} [{submission.url}]')
     email_title = submission.title
-    email_body = 'Link: %s\n\n %s' % (submission.url,
-                                      submission.selftext)
+    email_body = f'Link: {submission.url}\n\n {submission.selftext}'
     for match in match_list:
         pattern = re.compile(re.escape(match), re.IGNORECASE)
-        email_body = pattern.sub('<mark>%s</mark>' % match, email_body)
+        email_body = pattern.sub(f'<mark>{match}</mark>', email_body)
     email_body = 'Matched: <b>%s</b>\n\n' % (', '.join(match_list)) + email_body
     email_body = email_body.replace('\n', '<br>')
     send_email(email_title, email_body)
@@ -102,7 +101,7 @@ if __name__ == '__main__':
     subreddit = reddit.subreddit('legodeal')
 
     for submission in subreddit.stream.submissions():
-        print('Searching post: %s' % submission.title)
+        print(f'Searching post: {submission.title}')
         found = search_post(submission)
         if found:
             notify(submission, found)

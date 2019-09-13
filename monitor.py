@@ -19,14 +19,14 @@ def process_is_down(process_name):
 
 
 def send_respawn_email(cmd):
-    email_title = 'Respawning %s' % PROCESS_NAME
-    email_body = 'Respawning process %s' % cmd
+    email_title = f'Respawning {PROCESS_NAME}'
+    email_body = f'Respawning process {cmd}'
     send_email(email_title, email_body)
 
 
 def respawn():
     dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-    command = "nohup %s %s/%s" % (VENV_PATH, dir, PROCESS_NAME)
+    command = f"nohup {VENV_PATH} {dir}/{PROCESS_NAME}"
     logging.debug('Respawning process %s', command)
     send_respawn_email(command)
     subprocess.run(command.split())
@@ -34,7 +34,7 @@ def respawn():
 
 if __name__ == "__main__":
     if process_is_down(PROCESS_NAME):
-        print("respawning process %s" % PROCESS_NAME)
+        print(f"respawning process {PROCESS_NAME}")
         respawn()
     else:
-        print("%s is up" % PROCESS_NAME)
+        print(f"{PROCESS_NAME} is up")

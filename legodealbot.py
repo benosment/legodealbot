@@ -13,6 +13,9 @@ from email.mime.text import MIMEText
 from io import StringIO
 from twilio.rest import Client
 
+LAST_SEEN_FILENAME = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                  'last_seen.txt')
+
 query_terms = ['assembly square', 'tree house', 'modular', 'overwatch', 'gibraltar', 'architecture', 'upside down',
                'downtown diner', 'tower bridge', 'corner garage', 'sanctum', 'captain marvel']
 
@@ -96,12 +99,40 @@ def notify(submission, match_list):
     send_text(msg)
 
 
+def newer_submission(submission):
+    # open the file with the timestamp of the last entry processed
+    # return True if this submission occurred after that submission, False otherwise
+    try:
+        with open(LAST_SEEN_FILENAME) as f:
+            last_ts = float(f.read().strip())
+        from datetime import datetime
+        utc_dt = datetime.utcfromtimestamp(submission.created)
+        logging.debug("Submission created: %s" % utc_dt.strftime("%a %b %d %H:%M:%S %Z %Y"))
+        utc_dt = datetime.utcfromtimestamp(last_ts)
+        logging.debug("Last seen: %s" % utc_dt.strftime("%a %b %d %H:%M:%S %Z %Y"))
+        return submission.created > last_ts
+    except FileNotFoundError:
+        logging.debug(f'Exception with newer_submission on {submission.title}')
+        return True
+
+
+def record_submission(submission):
+    # store the timestamp of the submission in a file to be used later with newer_submission
+    with open(LAST_SEEN_FILENAME, 'w') as f:
+        f.write(str(submission.created))
+
+
 if __name__ == '__main__':
     reddit = praw.Reddit('legodealbot')
     subreddit = reddit.subreddit('legodeal')
 
     for submission in subreddit.stream.submissions():
-        print(f'Searching post: {submission.title}')
-        found = search_post(submission)
-        if found:
-            notify(submission, found)
+        if newer_submission(submission):
+            print(f'Searching post: {submission.title}')
+            found = search_post(submission)
+            if found:
+                notify(submission, found)
+            record_submission(submission)
+        else:
+            print(f'Skipping old post: {submission.title}')
+
